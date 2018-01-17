@@ -81,12 +81,13 @@ class classifier:
         :param test: boolean parameter to indicate test or not
         :return: classifier
         '''
-        X,Y,tX,tY=self.prepareDataSet(ratio=0.1)
-        self.classifier=SVC()
+        X,Y,tX,tY=self.prepareDataSet(ratio=0.5)
+        self.classifier=SVC(probability=True)
         self.classifier.fit(X,Y)
 
         print(self.classifier.predict(tX[0].reshape(1,-1)),tY[0])
 
+        print(self.classifier.score(tX,tY))
 
     def cnn(self,X,Y,x,y,test=False):
         '''
