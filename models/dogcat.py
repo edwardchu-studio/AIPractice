@@ -42,8 +42,11 @@ class Net(nn.Module):
         self.conv3 = nn.Conv2d(10,12,5)
         self.conv4 = nn.Conv2d(12,16,5)
         self.conv5=nn.Conv2d(16,20,5)
+
         self.pool = nn.MaxPool2d(2, 2)
         self.padding=nn.ReflectionPad2d(2)
+
+        self.drop=nn.Dropout2d(p=0.2)
 
         self.fc1 = nn.Linear(20 * 8 * 8, 1024)
         self.fc2 = nn.Linear(1024, 512)
@@ -65,6 +68,8 @@ class Net(nn.Module):
         x=self.pool(self.padding(x))
         #print(x.size())
 
+        x=self.drop(x)
+
         x = F.relu(self.conv4(x))
         x=self.pool(self.padding(x))
         #print(x.size())
@@ -73,12 +78,18 @@ class Net(nn.Module):
         x=self.pool(self.padding(x))
         #print(x.size())
 
+        x=self.drop(x)
+
         x= x.view(-1, 20 * 8* 8)
 
         x=self.fc1(x)
         x = F.relu(x)
-        x = F.sigmoid(self.fc2(x))
-        x = self.fc3(x)
+
+        x=self.drop(x)
+
+        x = self.fc2(x)
+
+        x = F.sigmoid(self.fc3(x))
         return x
 
 
