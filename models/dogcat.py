@@ -28,6 +28,8 @@ dataSetSize={
     'test':len(testDataSet.imgs)
 }
 
+use_gpu = torch.cuda.is_available()
+
 dataLoader={
     'train':trainDataLoader,
     'val':valDataLoader,
@@ -115,14 +117,14 @@ for epoch in range(num_epochs):  # loop over the dataset multiple times
             inputs, labels = data
 
             # wrap them in Variable
-            inputs, labels = Variable(inputs), Variable(labels)
-
-            # zero the parameter gradients
-            optimizer.zero_grad()
-
+            if use_gpu:
+                inputs = Variable(inputs.cuda())
+                labels = Variable(labels.cuda())# zero the parameter gradients
+            else:
+                optimizer.zero_grad()
+                inputs, labels = Variable(inputs), Variable(labels)
             # forward + backward + optimize
             outputs = net(inputs)
-
 
             _, preds = torch.max(outputs.data, 1)
             loss = criterion(outputs, labels)
