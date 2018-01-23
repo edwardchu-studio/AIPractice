@@ -97,7 +97,7 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 since = time.time()
 best_model_wts = net.state_dict()
 best_acc = 0.0
-num_epochs=20
+num_epochs=32
 
 for epoch in range(num_epochs):  # loop over the dataset multiple times
     print('Epoch {}/{}'.format(epoch+1, num_epochs))
