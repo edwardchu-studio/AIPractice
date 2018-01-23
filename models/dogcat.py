@@ -17,9 +17,9 @@ batchSize=4
 trainDataSet=torchvision.datasets.ImageFolder('../data/dogvscat/train',transform=transform)
 trainDataLoader=torch.utils.data.DataLoader(trainDataSet,batch_size=batchSize,shuffle=True)
 testDataSet=torchvision.datasets.ImageFolder('../data/dogvscat/test',transform=transform)
-testDataLoader=torch.utils.data.DataLoader(testDataSet,batch_size=5,shuffle=True)
+testDataLoader=torch.utils.data.DataLoader(testDataSet,batch_size=batchSize,shuffle=True)
 valDataSet=torchvision.datasets.ImageFolder('../data/dogvscat/val',transform=transform)
-valDataLoader=torch.utils.data.DataLoader(valDataSet,batch_size=5,shuffle=True)
+valDataLoader=torch.utils.data.DataLoader(valDataSet,batch_size=batchSize,shuffle=True)
 
 classes=trainDataLoader.dataset.classes
 dataSetSize={
@@ -94,7 +94,7 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 since = time.time()
 best_model_wts = net.state_dict()
 best_acc = 0.0
-num_epochs=16
+num_epochs=20
 
 for epoch in range(num_epochs):  # loop over the dataset multiple times
     print('Epoch {}/{}'.format(epoch+1, num_epochs))
@@ -154,5 +154,7 @@ for epoch in range(num_epochs):  # loop over the dataset multiple times
         if phase == 'val' and epoch_acc > best_acc:
             best_acc = epoch_acc
             best_model_wts = net.state_dict()
+
+torch.save(best_model_wts,'../cache/dogvscat/dogvscat1.pt')
 
 print('Finished Training')
