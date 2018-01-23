@@ -3,8 +3,6 @@ import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
-import numpy as np
 import torch.optim as optim
 from torch.autograd import Variable
 import time
@@ -35,10 +33,6 @@ dataLoader={
     'val':valDataLoader,
     'test':testDataLoader
 }
-def imgShow(img):
-    img=img/2+0.5
-    npimg=img.numpy()
-    plt.imshow(np.transpose(npimg,(1,2,0)))
 
 class Net(nn.Module):
     def __init__(self):
@@ -119,6 +113,7 @@ for epoch in range(num_epochs):  # loop over the dataset multiple times
 
             # wrap them in Variable
             if use_gpu:
+                optimizer.zero_grad()
                 inputs = Variable(inputs.cuda())
                 labels = Variable(labels.cuda())# zero the parameter gradients
             else:
