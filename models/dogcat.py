@@ -90,7 +90,8 @@ class Net(nn.Module):
 
 
 net=Net()
-
+if use_gpu:
+    net=net.cuda()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 since = time.time()
@@ -156,6 +157,7 @@ for epoch in range(num_epochs):  # loop over the dataset multiple times
         if phase == 'val' and epoch_acc > best_acc:
             best_acc = epoch_acc
             best_model_wts = net.state_dict()
+
 
 torch.save(best_model_wts,'../cache/dogvscat/dogvscat1.pt')
 
