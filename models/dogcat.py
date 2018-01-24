@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 import time
+
 transform = transforms.Compose(
     [
         transforms.Resize((256,256), interpolation=2),
@@ -104,10 +105,11 @@ best_model_wts = net.state_dict()
 best_acc = 0.0
 num_epochs=32
 
+since=time.time()
 for epoch in range(num_epochs):  # loop over the dataset multiple times
     print('Epoch {}/{}'.format(epoch+1, num_epochs))
     print('-' * 10)
-    for phase in ['train','val']:
+    for phase in ['train','val','test']:
 
         print("current period: {}, with data set of size: {}".format(phase,dataSetSize[phase]))
         running_loss = 0.0
@@ -167,4 +169,8 @@ for epoch in range(num_epochs):  # loop over the dataset multiple times
 
 torch.save(best_model_wts,'../cache/dogvscat/dogvscat1.pt')
 
-print('Finished Training')
+time_elapsed=time.time()
+
+print('Training complete in {:.0f}m {:.0f}s'.format(
+        time_elapsed // 60, time_elapsed % 60))
+print('Best val Acc: {:4f}'.format(best_acc))
