@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 import time
-
+torch.set_num_threads(8)
 transform = transforms.Compose(
     [
         transforms.Resize((256,256), interpolation=2),
