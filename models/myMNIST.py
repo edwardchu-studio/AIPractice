@@ -14,7 +14,7 @@ transform = transforms.Compose(
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 batchSize=4
-MNIST=torchvision.datasets.MNIST('../data/MNIST')
+MNIST=torchvision.datasets.MNIST('../data/MNIST',download=True)
 dataSet={
     'train':MNIST.train_data,
     #'test': MNIST.test_data
