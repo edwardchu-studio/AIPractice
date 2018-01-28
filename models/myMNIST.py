@@ -5,52 +5,62 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
+from torchvision import datasets
 import time
 
 torch.set_num_threads(8)
 transform = transforms.Compose(
     [
         transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
 
 batchSize=4
-MNIST=torchvision.datasets.MNIST('../data/MNIST',download=True)
-dataSet={
-    'train':MNIST.train_data,
-    #'test': MNIST.test_data
-}
-labelSet={
-    'train':MNIST.train_labels,
-    #'test':MNIST.test_labels
-}
+MNIST_ROOT='../data/MNIST'
 
+train_loader = torch.utils.data.DataLoader(
+    datasets.MNIST(root=MNIST_ROOT, train=True, download=True,
+                   transform=transform),
+    batch_size=batchSize, shuffle=True)
+test_loader=torch.utils.data.DataLoader(
+    datasets.MNIST(root=MNIST_ROOT, train=False, download=True,
+                   transform=transform),
+    batch_size=batchSize, shuffle=True)
+
+dataLoader={
+    'train':train_loader,
+    'test':test_loader
+
+}
 
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=4, kernel_size=3)
-        self.conv2 = nn.Conv2d(4, 8, 5)
-        self.conv3 = nn.Conv2d(8,12,5)
-        self.conv4 = nn.Conv2d(12,16,5)
+        self.conv2 = nn.Conv2d(in_channels=4, out_channels=8, kernel_size=5)
+        self.conv3 = nn.Conv2d(in_channels=8, out_channels=12, kernel_size=5)
+        self.conv4 = nn.Conv2d(in_channels=12, out_channels=16, kernel_size=5)
         # self.conv5=nn.Conv2d(16,20,5)
 
         self.pool = nn.MaxPool2d(2)
         # self.padding=nn.ReflectionPad2d(2)
         # self.drop=nn.Dropout2d(p=0.2)
 
-        self.fc1 = nn.Linear(12 * 3 * 3, 100)
+        self.fc1 = nn.Linear(16* 3 * 3, 100)
         self.fc2 = nn.Linear(100,64)
         self.fc3=nn.Linear(64,10)
 
     def forward(self, x):
-        x=x.view(1,28,28)
-        print(x.shape)
-        print(self.conv1.stride)
+        # x=x.view(1,28,28)
+        # print(x.shape)
+        # print(self.conv1.stride)
         x=F.relu(self.conv1(x))
         x=F.relu(self.conv2(x))
         x=self.pool(x)
         x=F.relu(self.conv3(x))
         x=F.relu(self.conv4(x))
+        # print(x.shape)
+        x=x.view(-1,16*3*3)
         x=self.fc3(self.fc2(self.fc1(x)))
 
         return F.sigmoid(x)
@@ -85,14 +95,15 @@ def trainNetworks():
                 net.train(True)
             else:
                 net.train(False)
-            for i,d in enumerate(zip(dataSet[phase],labelSet[phase])):
-                print(i)
+            for i,d in enumerate(dataLoader[phase]):
+                # print(i)
                 inputs,labels =d
-                inputs.unsqueeze_(0)
-                print(inputs.shape)
-                labels=torch.IntTensor(labels)
-                optimizer.zero_grad()
 
+                # labels=torch.IntTensor(labels)
+                # optimizer.zero_grad()
+
+                print(inputs.shape)
+                print(labels.shape)
                 if use_gpu:
                     optimizer.zero_grad()
                     inputs = Variable(inputs.cuda())
@@ -101,7 +112,12 @@ def trainNetworks():
                     optimizer.zero_grad()
                     inputs, labels = Variable(inputs), Variable(labels)
 
+                print(inputs.shape)
+                print(labels.shape)
+
                 outputs=net(inputs)
+                print(outputs.shape)
+
                 _, preds = torch.max(outputs.data, 1)
                 loss = criterion(outputs, labels)
 
