@@ -134,8 +134,8 @@ def trainNetworks():
                           (epoch + 1, i + 1, running_loss / (batchSize*(i+1)),running_corrects/(batchSize*(i+1))))
 
 
-            epoch_loss = running_loss / (i+1)*batchSize
-            epoch_acc = running_corrects / (i+1)*batchSize
+            epoch_loss = running_loss / ((i+1)*batchSize)
+            epoch_acc = running_corrects / ((i+1)*batchSize)
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                         phase, epoch_loss, epoch_acc))
 
