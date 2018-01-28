@@ -186,7 +186,7 @@ def trainNetworks():
                     inputs, labels = Variable(inputs), Variable(labels)
                 # forward + backward + optimize
                 outputs = net(inputs)
-
+                print(outputs.shape,labels.shape)
                 _, preds = torch.max(outputs.data, 1)
                 loss = criterion(outputs, labels)
 
