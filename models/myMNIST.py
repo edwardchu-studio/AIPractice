@@ -86,10 +86,11 @@ num_epochs=32
 def trainNetworks():
     since = time.time()
     for epoch in range(num_epochs):
-        running_loss=0.0
-        running_corrects=0
+	print("==============={}/{}===============".format(epoch+1,num_epochs))
+	running_loss=0.0
+	running_corrects=0
         best_acc=0.0
-        for phase in ['train']:
+        for phase in ['train','test']:
             print('current period:{}'.format(phase))
             if phase == 'train':
                 net.train(True)
@@ -102,8 +103,8 @@ def trainNetworks():
                 # labels=torch.IntTensor(labels)
                 # optimizer.zero_grad()
 
-                print(inputs.shape)
-                print(labels.shape)
+                #print(inputs.shape)
+                #print(labels.shape)
                 if use_gpu:
                     optimizer.zero_grad()
                     inputs = Variable(inputs.cuda())
@@ -112,11 +113,10 @@ def trainNetworks():
                     optimizer.zero_grad()
                     inputs, labels = Variable(inputs), Variable(labels)
 
-                print(inputs.shape)
-                print(labels.shape)
+                #print(inputs.shape)
+                #print(labels.shape)
 
                 outputs=net(inputs)
-                print(outputs.shape)
 
                 _, preds = torch.max(outputs.data, 1)
                 loss = criterion(outputs, labels)

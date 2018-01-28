@@ -6,5 +6,5 @@ _data/
 data/
 
 cache/
-
+models/*.out
 models/nohup.out
