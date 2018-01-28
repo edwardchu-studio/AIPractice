@@ -87,10 +87,10 @@ def trainNetworks():
     since = time.time()
     for epoch in range(num_epochs):
         print("==============={}/{}===============".format(epoch+1,num_epochs))
-        running_loss=0.0
-        running_corrects=0
         best_acc=0.0
         for phase in ['train','test']:
+            running_loss=0.0
+            running_corrects=0
             print('current period:{}'.format(phase))
             if phase == 'train':
                 net.train(True)
