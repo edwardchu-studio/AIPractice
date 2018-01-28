@@ -3,7 +3,11 @@ This is self-learning project, including various models on various dataset, usin
 ## Models:
  in the folder `models/`
  1. Mushroom classifier
+
  2. Dog or Cat classifier
+  - using CNN:
+    - Network Structure:
+
 ## Dataset:
  not include in this git repo, but can be found in [Kaggle](www.kaggle.com)
 ## Dependency:
