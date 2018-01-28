@@ -28,7 +28,6 @@ dataSetSize={
 }
 
 use_gpu = torch.cuda.is_available()
-
 dataLoader={
     'train':trainDataLoader,
     'val':valDataLoader,
