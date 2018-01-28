@@ -7,7 +7,6 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torchvision import datasets
 import time
-
 torch.set_num_threads(8)
 transform = transforms.Compose(
     [
