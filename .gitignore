@@ -8,3 +8,5 @@ data/
 cache/
 models/*.out
 models/nohup.out
+
+models/tf/GANs/MNIST_data/
