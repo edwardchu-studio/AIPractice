@@ -113,7 +113,7 @@ def show_train_hist(hist, show = False, save = False, path = 'Train_hist.png'):
 batch_size = 128
 lr = 0.0002
 train_epoch = 20
-
+num_iters=1000
 # load MNIST
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True, reshape=[])
 
@@ -183,7 +183,7 @@ for epoch in range(train_epoch):
     G_losses = []
     D_losses = []
     epoch_start_time = time.time()
-    for iter in range(mnist.train.num_examples // batch_size):
+    for iter in range(num_iters):
         # update discriminator
         x_ = train_set[iter*batch_size:(iter+1)*batch_size]
         z_ = np.random.normal(0, 1, (batch_size, 1, 1, 100))
@@ -202,7 +202,7 @@ for epoch in range(train_epoch):
     per_epoch_ptime = epoch_end_time - epoch_start_time
     print('[%d/%d] - ptime: %.2f loss_d: %.3f, loss_g: %.3f' % ((epoch + 1), train_epoch, per_epoch_ptime, np.mean(D_losses), np.mean(G_losses)))
     fixed_p = root + 'Fixed_results/' + model + str(epoch + 1) + '.png'
-    show_result((epoch + 1), save=True, path=fixed_p)
+    # show_result((epoch + 1), save=True, path=fixed_p)
     train_hist['D_losses'].append(np.mean(D_losses))
     train_hist['G_losses'].append(np.mean(G_losses))
     train_hist['per_epoch_ptimes'].append(per_epoch_ptime)
@@ -216,7 +216,7 @@ print("Training finish!... save training results")
 with open(root + model + 'train_hist.pkl', 'wb') as f:
     pickle.dump(train_hist, f)
 
-show_train_hist(train_hist, save=True, path=root + model + 'train_hist.png')
+# show_train_hist(train_hist, save=True, path=root + model + 'train_hist.png')
 
 images = []
 for e in range(train_epoch):
