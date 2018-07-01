@@ -113,10 +113,10 @@ def show_train_hist(hist, show = False, save = False, path = 'Train_hist.png'):
 batch_size = 128
 lr = 0.0002
 train_epoch = 20
-num_iters=1000
+
 # load MNIST
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True, reshape=[])
-
+num_iters=mnist.train.num_examples//batch_size
 # variables : input
 x = tf.placeholder(tf.float32, shape=(None, 64, 64, 1))
 z = tf.placeholder(tf.float32, shape=(None, 1, 1, 100))
