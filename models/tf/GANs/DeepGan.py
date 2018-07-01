@@ -9,54 +9,56 @@ def lrelu(x, th=0.2):
 
 # G(z)
 def generator(x, isTrain=True, reuse=False):
-    with tf.variable_scope('generator', reuse=reuse):
+    with tf.device('/device:GPU:2'):
+	with tf.variable_scope('generator', reuse=reuse):
 
         # 1st hidden layer
-        conv1 = tf.layers.conv2d_transpose(x, 1024, [4, 4], strides=(1, 1), padding='valid')
-        lrelu1 = lrelu(tf.layers.batch_normalization(conv1, training=isTrain), 0.2)
+        	conv1 = tf.layers.conv2d_transpose(x, 1024, [4, 4], strides=(1, 1), padding='valid')
+        	lrelu1 = lrelu(tf.layers.batch_normalization(conv1, training=isTrain), 0.2)
         # tf.summary.image('G_Conv1',lrelu1)
         # 2nd hidden layer
-        conv2 = tf.layers.conv2d_transpose(lrelu1, 512, [4, 4], strides=(2, 2), padding='same')
-        lrelu2 = lrelu(tf.layers.batch_normalization(conv2, training=isTrain), 0.2)
+        	conv2 = tf.layers.conv2d_transpose(lrelu1, 512, [4, 4], strides=(2, 2), padding='same')
+        	lrelu2 = lrelu(tf.layers.batch_normalization(conv2, training=isTrain), 0.2)
         # tf.summary.image('G_Conv2', lrelu2)
         # 3rd hidden layer
-        conv3 = tf.layers.conv2d_transpose(lrelu2, 256, [4, 4], strides=(2, 2), padding='same')
-        lrelu3 = lrelu(tf.layers.batch_normalization(conv3, training=isTrain), 0.2)
+        	conv3 = tf.layers.conv2d_transpose(lrelu2, 256, [4, 4], strides=(2, 2), padding='same')
+        	lrelu3 = lrelu(tf.layers.batch_normalization(conv3, training=isTrain), 0.2)
         # tf.summary.image('G_Conv3', lrelu3)
         # 4th hidden layer
-        conv4 = tf.layers.conv2d_transpose(lrelu3, 128, [4, 4], strides=(2, 2), padding='same')
-        lrelu4 = lrelu(tf.layers.batch_normalization(conv4, training=isTrain), 0.2)
+        	conv4 = tf.layers.conv2d_transpose(lrelu3, 128, [4, 4], strides=(2, 2), padding='same')
+        	lrelu4 = lrelu(tf.layers.batch_normalization(conv4, training=isTrain), 0.2)
         # tf.summary.image('G_Conv4', lrelu4)
         # output layer
-        conv5 = tf.layers.conv2d_transpose(lrelu4, 1, [4, 4], strides=(2, 2), padding='same')
-        o = tf.nn.tanh(conv5)
+        	conv5 = tf.layers.conv2d_transpose(lrelu4, 1, [4, 4], strides=(2, 2), padding='same')
+        	o = tf.nn.tanh(conv5)
         # tf.summary.image('G_output', o)
-        return o
+        	return o
 
 # D(x)
 def discriminator(x, isTrain=True, reuse=False):
-    with tf.variable_scope('discriminator', reuse=reuse):
+    with tf.device('/device:GPU:0'):
+	with tf.variable_scope('discriminator', reuse=reuse):
         # 1st hidden layer
-        conv1 = tf.layers.conv2d(x, 128, [4, 4], strides=(2, 2), padding='same')
-        lrelu1 = lrelu(conv1, 0.2)
+       		conv1 = tf.layers.conv2d(x, 128, [4, 4], strides=(2, 2), padding='same')
+        	lrelu1 = lrelu(conv1, 0.2)
         # tf.summary.image('D_Conv1',lrelu1)
         # 2nd hidden layer
-        conv2 = tf.layers.conv2d(lrelu1, 256, [4, 4], strides=(2, 2), padding='same')
-        lrelu2 = lrelu(tf.layers.batch_normalization(conv2, training=isTrain), 0.2)
+        	conv2 = tf.layers.conv2d(lrelu1, 256, [4, 4], strides=(2, 2), padding='same')
+        	lrelu2 = lrelu(tf.layers.batch_normalization(conv2, training=isTrain), 0.2)
         # tf.summary.image('D_Conv2', lrelu2)
         # 3rd hidden layer
-        conv3 = tf.layers.conv2d(lrelu2, 512, [4, 4], strides=(2, 2), padding='same')
-        lrelu3 = lrelu(tf.layers.batch_normalization(conv3, training=isTrain), 0.2)
+        	conv3 = tf.layers.conv2d(lrelu2, 512, [4, 4], strides=(2, 2), padding='same')
+        	lrelu3 = lrelu(tf.layers.batch_normalization(conv3, training=isTrain), 0.2)
         # tf.summary.image('D_Conv3', lrelu3)
         # 4th hidden layer
-        conv4 = tf.layers.conv2d(lrelu3, 1024, [4, 4], strides=(2, 2), padding='same')
-        lrelu4 = lrelu(tf.layers.batch_normalization(conv4, training=isTrain), 0.2)
+        	conv4 = tf.layers.conv2d(lrelu3, 1024, [4, 4], strides=(2, 2), padding='same')
+        	lrelu4 = lrelu(tf.layers.batch_normalization(conv4, training=isTrain), 0.2)
         # tf.summary.image('D_Conv4', lrelu4)
         # output layer
-        conv5 = tf.layers.conv2d(lrelu4, 1, [4, 4], strides=(1, 1), padding='valid')
-        o = tf.nn.sigmoid(conv5)
+        	conv5 = tf.layers.conv2d(lrelu4, 1, [4, 4], strides=(1, 1), padding='valid')
+        	o = tf.nn.sigmoid(conv5)
         # tf.summary.image('D_output', o)
-        return o, conv5
+   		return o, conv5
 
 fixed_z_ = np.random.normal(0, 1, (25, 1, 1, 100))
 def show_result(num_epoch, show = False, save = False, path = 'result.png'):
@@ -113,10 +115,9 @@ def show_train_hist(hist, show = False, save = False, path = 'Train_hist.png'):
 batch_size = 128
 lr = 0.0002
 train_epoch = 20
-num_iters=1000
 # load MNIST
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True, reshape=[])
-
+num_iters=mnist.train.num_examples//batch_size
 # variables : input
 x = tf.placeholder(tf.float32, shape=(None, 64, 64, 1))
 z = tf.placeholder(tf.float32, shape=(None, 1, 1, 100))
