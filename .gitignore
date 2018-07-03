@@ -10,3 +10,11 @@ models/*.out
 models/nohup.out
 
 models/tf/GANs/MNIST_data/
+
+utils/G1000\.npy
+
+utils/G100000\.npy
+
+utils/I1000\.npy
+
+utils/I100000\.npy

@@ -12,14 +12,6 @@ import torchvision
 from tensorflow.examples.tutorials.mnist import input_data
 
 
-class DataLoader(object):
-    def __init__(self):
-        self.data={
-
-        }
-
-
-
 class Generator(nn.Module):
     def __init__(self):
         super(Generator,self).__init__()
@@ -131,3 +123,4 @@ class cDCGAN(nn.Module):
                         G_optimizer.step()
                         d_loss.backward()
                         D_optimizer.step()
+

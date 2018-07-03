@@ -51,3 +51,7 @@ class doodleGenerator:
         np.save('I' + str(num), I)
         self.TRAIN_SET=[G,I]
         return G, I
+
+if __name__ == '__main__':
+    dg=doodleGenerator()
+    data=dg.createDataSet()
