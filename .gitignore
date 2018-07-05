@@ -18,3 +18,15 @@ utils/G100000\.npy
 utils/I1000\.npy
 
 utils/I100000\.npy
+
+utils/out/
+
+utils/\.DS_Store
+
+utils/D_temp\.pth\.tar
+
+utils/G_temp\.pth\.tar
+
+utils/G10000\.npy
+
+utils/I10000\.npy
