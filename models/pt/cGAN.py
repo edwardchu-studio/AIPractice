@@ -236,13 +236,13 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.g_lr = 0.0002
-        self.d_lr=0.0002
+        self.g_lr = 0.0001
+        self.d_lr=0.0001
         self.batch_size = 25
         self.iters = 1000
         self.epoch = 200
 
-        self.SAVE_DIR = './out/9/'
+        self.SAVE_DIR = './out/10/'
         try:
             os.makedirs(self.SAVE_DIR)
         except:
