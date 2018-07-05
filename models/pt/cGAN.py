@@ -101,89 +101,48 @@ class Generator(nn.Module):
     def __init__(self):
         super(Generator,self).__init__()
 
-        # self.g_dconv1=nn.ConvTranspose2d(4,8,5,2,2,0)
-        # self.g_dconv2=nn.ConvTranspose2d(8,16,3,2,1,1)
-        #
-        # self.z_dconv1=nn.ConvTranspose2d(8,16,5,2,2,0)
-        # self.z_dconv2=nn.ConvTranspose2d(24,32,3,2,1,1)
-        #
-        # self.z_dconv3=nn.ConvTranspose2d(32,1,stride=2,kernel_size=1,padding=10,output_padding=1)
-        #
-
-        self.m_fc=nn.Linear(6400,56*56)
-
         self.use_gpu=torch.cuda.is_available()
 
+        self.z_conv1=nn.Conv2d(8,16,5,1,2)
+        self.z_pool1=nn.MaxPool2d(2)
+        self.z_conv2=nn.Conv2d(16,32,7,1,0)
+        self.z_conv3=nn.Conv2d(36,64,1,1,0)
+        self.z_conv4=nn.Conv2d(64,128,3,1,1)
+        self.fc1=nn.Linear(128*10*10,6400)
+        self.fc2=nn.Linear(6400,56*56)
     def forward(self, g,z):
 
         if self.use_gpu:
-            g = g.view(-1, 4, 10, 10).cuda()
-            z=z.view(-1,60,10,10).cuda()
+            g=g.view(-1,4,10,10).cuda()
+            z=z.view(-1,8,32,32).cuda()
+            z1=F.relu(self.z_pool1(self.z_conv1(z)))
+            z2=F.relu(self.z_conv2(z1))
 
-            gz=torch.cat([g,z],1)
-            gz=gz.view(-1,64*10*10).cuda()
-            o=self.m_fc(gz)
-            # g=g.view(-1,4,10,10).cuda()
-            # # print(g.shape,z.shape)
-            # z=z.cuda()
-            # gdc1=F.relu(self.g_dconv1(g))
-            # # print('gdc1.shape:',gdc1.shape)
-            # # gc1=self.bn_g(gdc1)
-            #
-            # gdc2=F.relu(self.g_dconv2(gdc1))
-            # # print('gdc2.shape:',gdc2.shape)
-            #
-            #
-            # zdc1 = F.relu(self.z_dconv1(z))
-            # # print('zdc1.shape',zdc1.shape)
-            #
-            # m1 = torch.cat([gdc1, zdc1], 1)
-            #
-            # # print('m1.shape',m1.shape)
-            # zdc2=F.relu(self.z_dconv2(m1))
-            #
-            # # print('zdc2.shape',zdc2.shape)
-            #
-            # # m2= torch.cat([gdc2, zdc2], 1)
-            # # print('m2.shape',m2.shape)
-            #
-            # # m2_r=zdc2.view(-1,32,32,32).cuda()
-            # o = F.relu(self.z_dconv3(zdc2))
-            # # print('output.shape',o.shape)
-            return o.cuda()
+
+            _z3=torch.cat([g,z2],1)
+            z3=F.relu(self.z_conv3(_z3))
+            z4=F.relu(self.z_conv4(z3))
+
+            z4=z4.view(-1,128*10*10).cuda()
+            fc1=self.fc1(z4)
+            
+            o = self.fc2(fc1)
+            return o.view(-1,1,56,56).cuda()
         else:
-            g = g.view(-1, 4, 10, 10)
-            z=z.view(-1,60,10,10)
+            g=g.view(-1,4,10,10)
+            z=z.view(-1,8,32,32)
+            z1=F.relu(self.z_pool1(self.z_conv1(z)))
+            z2=F.relu(self.z_conv2(z1))
+            print("z2.shape: ",z2.shape)
 
-            gz=torch.cat([g,z],1)
-            gz=gz.view(-1,64*10*10)
-            o=self.m_fc(gz)
-            # print(g.shape, z.shape)
-            #
-            # gdc1 = F.relu(self.g_dconv1(g))
-            # print('gdc1.shape:', gdc1.shape)
-            # # gc1=self.bn_g(gc1)
-            #
-            # gdc2 = F.relu(self.g_dconv2(gdc1))
-            # print('gdc2.shape:', gdc2.shape)
-            #
-            # zdc1 = F.relu(self.z_dconv1(z))
-            # print('zdc1.shape', zdc1.shape)
-            #
-            # m1 = torch.cat([gdc1, zdc1], 1)
-            #
-            # print('m1.shape', m1.shape)
-            # zdc2 = F.relu(self.z_dconv2(m1))
-            #
-            # print('zdc2.shape', zdc2.shape)
-            #
-            # # m2 = torch.cat([gdc2, zdc2], 1)
-            # # print('m2.shape', m2.shape)
-            #
-            # # m2_r = m2.view(-1, 48 * 38 * 38)
-            # o = F.relu(self.z_dconv3(zdc2))
-            # print(o.shape)
-            # print('output.shape', o.shape)
+            _z3=torch.cat([g,z2],1)
+            z3=F.relu(self.z_conv3(_z3))
+            z4=F.relu(self.z_conv4(z3))
+            print("z4.shape: ", z4.shape)
+            z4=z4.view(-1,128*10*10)
+            fc1=self.fc1(z4)
+            print("fc1.shape: ", fc1.shape)
+            o = self.fc2(fc1)
             return o.view(-1,1,56,56)
 
 
@@ -340,7 +299,7 @@ class cDCGAN(nn.Module):
                     self.G.train(False)
 
                 for i, data in enumerate(self.dataLoader[phase], 0):
-                    z = torch.randn((self.batch_size, 60,10,10))
+                    z = torch.randn((self.batch_size, 8,32,32))
 
                     g, img = data
                     G_optimizer.zero_grad()
@@ -398,7 +357,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G100000.npy'), np.load('../../data/doodle/I100000.npy')]
+    data = [np.load('../../data/doodle/G1000.npy'), np.load('../../data/doodle/I1000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
 #    dcgan.loadCheckpoint('19')
