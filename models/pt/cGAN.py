@@ -191,7 +191,7 @@ class cDCGAN(nn.Module):
         self.iters = 1000
         self.epoch = 200
 
-        self.SAVE_DIR = './out/6/'
+        self.SAVE_DIR = './out/7/'
         try:
             os.makedirs(self.SAVE_DIR)
         except:
@@ -307,7 +307,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G1000.npy'), np.load('../../data/doodle/I1000.npy')]
+    data = [np.load('../../data/doodle/G30000.npy'), np.load('../../data/doodle/I30000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
 #    dcgan.loadCheckpoint('19')
