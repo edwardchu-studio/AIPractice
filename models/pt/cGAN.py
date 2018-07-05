@@ -344,9 +344,9 @@ class cDCGAN(nn.Module):
                     G_losses.append(g_loss.data[0])
                     D_losses.append(d_loss.data[0])
                     if phase == 'train':
-                        d_loss.backward()
+                        d_loss.backward(retain_graph=True)
                         D_optimizer.step()
-                        g_loss.backward(retain_graph=True)
+                        g_loss.backward()
                         G_optimizer.step()
 
                     if i % 50 == 0:
