@@ -236,12 +236,13 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.lr = 0.00067
+        self.g_lr = 0.0002
+        self.d_lr=0.001
         self.batch_size = 25
         self.iters = 1000
         self.epoch = 200
 
-        self.SAVE_DIR = './out/7/'
+        self.SAVE_DIR = './out/8/'
         try:
             os.makedirs(self.SAVE_DIR)
         except:
@@ -270,16 +271,19 @@ class cDCGAN(nn.Module):
                 batched_data.append((np.array(cur_batch_G), np.array(cur_batch_I)))
                 cur_batch_G = []
                 cur_batch_I = []
-        self.dataLoader['train'] = batched_data[:int(batch_num * 0.8)]
-        self.dataLoader['test'] = batched_data[int(batch_num * 0.8):]
+        self.dataLoader['train'] = batched_data[:int(batch_num * ratio)]
+        self.dataLoader['test'] = batched_data[int(batch_num * ratio):]
         print(self.dataLoader['train'][0][0][0].shape, self.dataLoader['train'][0][0][1].shape)
 
     def convert2Cuda(self, l):
         return [_.cuda() for _ in l]
 
     def trainNetwork(self):
-        G_optimizer = optim.SGD(self.G.parameters(), lr=self.lr, momentum=0.9)
-        D_optimizer = optim.SGD(self.D.parameters(), lr=self.lr, momentum=0.9)
+        G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
+
+
+        D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
+
 
         for e in range(self.epoch):
             G_losses, D_losses = [], []
@@ -325,7 +329,7 @@ class cDCGAN(nn.Module):
                     else:
                         real_d_loss = self.rD_LOSS(r_d_out, rd_label)
                         fake_d_loss = self.fD_LOSS(f_d_out, fd_label)
-                        d_loss = real_d_loss + fake_d_loss
+                        d_loss = 0.5*(real_d_loss + fake_d_loss)
                         g_loss = self.G_LOSS(f_d_out, rd_label)
 
                     if i % 50 == 0:
