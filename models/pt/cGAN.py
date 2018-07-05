@@ -244,8 +244,8 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.g_lr = 0.0001
-        self.d_lr=0.0001
+        self.g_lr = 0.01
+        self.d_lr=0.01
         self.batch_size = 25
         self.iters = 1000
         self.epoch = 200
@@ -287,8 +287,8 @@ class cDCGAN(nn.Module):
         return [_.cuda() for _ in l]
 
     def trainNetwork(self):
-        # G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
-        G_optimizer= optim.Adadelta(self.G.parameters())
+        G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
+        # G_optimizer= optim.Adadelta(self.G.parameters())
         D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
         # D_optimizer=optim.Adadelta(self.D.parameters())
 
