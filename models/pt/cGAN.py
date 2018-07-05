@@ -28,9 +28,10 @@ class Generator(nn.Module):
         self.z_dconv1=nn.ConvTranspose2d(8,16,5,2,2,0)
         self.z_dconv2=nn.ConvTranspose2d(24,32,3,2,1,1)
 
+        self.z_dconv3=nn.ConvTranspose2d(32,1,stride=2,kernel_size=1,padding=10,output_padding=1)
 
 
-        self.m_fc=nn.Linear(48*38*38,56*56*1)
+        self.m_fc=nn.Linear(32*32*32,56*56*1)
         self.bn_g=nn.modules.BatchNorm2d(8)
         self.bn_z=nn.modules.BatchNorm2d(12)
         self.use_gpu=torch.cuda.is_available()
@@ -59,13 +60,13 @@ class Generator(nn.Module):
 
             # print('zdc2.shape',zdc2.shape)
 
-            m2= torch.cat([gdc2, zdc2], 1)
+            # m2= torch.cat([gdc2, zdc2], 1)
             # print('m2.shape',m2.shape)
 
-            m2_r=m2.view(-1,48*38*38).cuda()
-            o = self.m_fc(m2_r)
+            # m2_r=zdc2.view(-1,32,32,32).cuda()
+            o = self.z_dconv3(zdc2)
             # print('output.shape',o.shape)
-            return o.view((-1,1,56, 56)).cuda()
+            return o.cuda()
         else:
             g = g.view(-1, 4, 10, 10)
             print(g.shape, z.shape)
@@ -87,13 +88,14 @@ class Generator(nn.Module):
 
             print('zdc2.shape', zdc2.shape)
 
-            m2 = torch.cat([gdc2, zdc2], 1)
-            print('m2.shape', m2.shape)
+            # m2 = torch.cat([gdc2, zdc2], 1)
+            # print('m2.shape', m2.shape)
 
-            m2_r = m2.view(-1, 48 * 38 * 38)
-            o = self.m_fc(m2_r)
-            print('output.shape', o.shape)
-            return o.view((-1, 1, 56, 56))
+            # m2_r = m2.view(-1, 48 * 38 * 38)
+            o = self.z_dconv3(zdc2)
+            print(o.shape)
+            # print('output.shape', o.shape)
+            return o
 
 
 class Discriminator(nn.Module):
@@ -307,7 +309,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G30000.npy'), np.load('../../data/doodle/I30000.npy')]
+    data = [np.load('../../data/doodle/G1000.npy'), np.load('../../data/doodle/I1000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
 #    dcgan.loadCheckpoint('19')
