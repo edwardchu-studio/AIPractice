@@ -288,7 +288,7 @@ class cDCGAN(nn.Module):
 
     def trainNetwork(self):
         # G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
-        G_optimizer= optim.Adam(self.G.parameters())
+        G_optimizer= optim.Adadelta(self.G.parameters())
         D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
         # D_optimizer=optim.Adadelta(self.D.parameters())
 
