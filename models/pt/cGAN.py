@@ -64,7 +64,7 @@ class Generator(nn.Module):
             # print('m2.shape',m2.shape)
 
             # m2_r=zdc2.view(-1,32,32,32).cuda()
-            o = self.z_dconv3(zdc2)
+            o = F.relu(self.z_dconv3(zdc2))
             # print('output.shape',o.shape)
             return o.cuda()
         else:
@@ -92,7 +92,7 @@ class Generator(nn.Module):
             # print('m2.shape', m2.shape)
 
             # m2_r = m2.view(-1, 48 * 38 * 38)
-            o = self.z_dconv3(zdc2)
+            o = F.relu(self.z_dconv3(zdc2))
             print(o.shape)
             # print('output.shape', o.shape)
             return o
@@ -309,7 +309,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G30000.npy'), np.load('../../data/doodle/I30000.npy')]
+    data = [np.load('../../data/doodle/G20000.npy'), np.load('../../data/doodle/I20000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
 #    dcgan.loadCheckpoint('19')
