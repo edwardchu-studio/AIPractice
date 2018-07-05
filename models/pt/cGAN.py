@@ -39,32 +39,32 @@ class Generator(nn.Module):
 
         if self.use_gpu:
             g=g.view(-1,4,10,10).cuda()
-            print(g.shape,z.shape)
+            # print(g.shape,z.shape)
 
             gdc1=F.relu(self.g_dconv1(g))
             print('gdc1.shape:',gdc1.shape)
             # gc1=self.bn_g(gc1)
 
             gdc2=F.relu(self.g_dconv2(gdc1))
-            print('gdc2.shape:',gdc2.shape)
+            # print('gdc2.shape:',gdc2.shape)
 
 
             zdc1 = F.relu(self.z_dconv1(z))
-            print('zdc1.shape',zdc1.shape)
+            # print('zdc1.shape',zdc1.shape)
 
             m1 = torch.cat([gdc1, zdc1], 1)
 
-            print('m1.shape',m1.shape)
+            # print('m1.shape',m1.shape)
             zdc2=F.relu(self.z_dconv2(m1))
 
-            print('zdc2.shape',zdc2.shape)
+            # print('zdc2.shape',zdc2.shape)
 
             m2= torch.cat([gdc2, zdc2], 1)
-            print('m2.shape',m2.shape)
+            # print('m2.shape',m2.shape)
 
             m2_r=m2.view(-1,48*32*32).cuda()
             o = self.m_fc(m2_r)
-            print('output.shape',o.shape)
+            # print('output.shape',o.shape)
             return o.view((-1,1,56, 56)).cuda()
         else:
             g = g.view(-1, 4, 10, 10)
