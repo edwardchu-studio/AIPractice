@@ -108,6 +108,7 @@ class cDCGAN(nn.Module):
         self.fD_LOSS = nn.CrossEntropyLoss()
         self.use_gpu = torch.cuda.is_available()
         if self.use_gpu:
+            print('use cuda')
             self.G = Generator().cuda()
             self.D = Discriminator().cuda()
         else:
@@ -118,7 +119,7 @@ class cDCGAN(nn.Module):
         self.iters = 1000
         self.epoch = 200
 
-        self.SAVE_DIR = './out/3/'
+        self.SAVE_DIR = './out/4/'
         try:
             os.makedirs(self.SAVE_DIR)
         except:
