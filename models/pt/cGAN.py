@@ -103,12 +103,17 @@ class Discriminator(nn.Module):
 class cDCGAN(nn.Module):
     def __init__(self):
         super(cDCGAN, self).__init__()
-        self.G = Generator()
-        self.D = Discriminator()
+
         self.G_LOSS = nn.CrossEntropyLoss()
         self.rD_LOSS = nn.CrossEntropyLoss()
         self.fD_LOSS = nn.CrossEntropyLoss()
         self.use_gpu = torch.cuda.is_available()
+        if self.use_gpu:
+            self.G = Generator().cuda()
+            self.D = Discriminator().cuda()
+        else:
+            self.G = Generator()
+            self.D = Discriminator()
         self.lr = 0.001
         self.batch_size = 50
         self.iters = 1000
