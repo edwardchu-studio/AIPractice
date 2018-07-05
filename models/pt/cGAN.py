@@ -324,7 +324,7 @@ class cDCGAN(nn.Module):
                     if self.use_gpu:
                         real_d_loss = self.rD_LOSS(r_d_out, rd_label.cuda())
                         fake_d_loss = self.fD_LOSS(f_d_out, fd_label.cuda())
-                        d_loss = real_d_loss + fake_d_loss
+                        d_loss = 0.5*(real_d_loss + fake_d_loss)
                         g_loss = self.G_LOSS(f_d_out, rd_label.cuda())
                     else:
                         real_d_loss = self.rD_LOSS(r_d_out, rd_label)
