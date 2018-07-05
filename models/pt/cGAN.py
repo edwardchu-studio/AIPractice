@@ -18,9 +18,9 @@ import scipy.misc as misc
 import os
 
 
-class Generator(nn.Module):
+class dGenerator(nn.Module):
     def __init__(self):
-        super(Generator,self).__init__()
+        super(dGenerator,self).__init__()
 
         self.g_dconv1=nn.ConvTranspose2d(4,8,5,2,2,0)
         self.g_dconv2=nn.ConvTranspose2d(8,16,3,2,1,1)
@@ -96,6 +96,95 @@ class Generator(nn.Module):
             print(o.shape)
             # print('output.shape', o.shape)
             return o
+
+class Generator(nn.Module):
+    def __init__(self):
+        super(Generator,self).__init__()
+
+        # self.g_dconv1=nn.ConvTranspose2d(4,8,5,2,2,0)
+        # self.g_dconv2=nn.ConvTranspose2d(8,16,3,2,1,1)
+        #
+        # self.z_dconv1=nn.ConvTranspose2d(8,16,5,2,2,0)
+        # self.z_dconv2=nn.ConvTranspose2d(24,32,3,2,1,1)
+        #
+        # self.z_dconv3=nn.ConvTranspose2d(32,1,stride=2,kernel_size=1,padding=10,output_padding=1)
+        #
+
+        self.m_fc=nn.Linear(6400,56*56)
+
+        self.use_gpu=torch.cuda.is_available()
+
+    def forward(self, g,z):
+
+        if self.use_gpu:
+            g = g.view(-1, 4, 10, 10).cuda()
+            z=z.view(-1,60,10,10).cuda()
+
+            gz=torch.cat([g,z],1)
+            gz=gz.view(-1,64*10*10).cuda()
+            o=self.m_fc(gz)
+            # g=g.view(-1,4,10,10).cuda()
+            # # print(g.shape,z.shape)
+            # z=z.cuda()
+            # gdc1=F.relu(self.g_dconv1(g))
+            # # print('gdc1.shape:',gdc1.shape)
+            # # gc1=self.bn_g(gdc1)
+            #
+            # gdc2=F.relu(self.g_dconv2(gdc1))
+            # # print('gdc2.shape:',gdc2.shape)
+            #
+            #
+            # zdc1 = F.relu(self.z_dconv1(z))
+            # # print('zdc1.shape',zdc1.shape)
+            #
+            # m1 = torch.cat([gdc1, zdc1], 1)
+            #
+            # # print('m1.shape',m1.shape)
+            # zdc2=F.relu(self.z_dconv2(m1))
+            #
+            # # print('zdc2.shape',zdc2.shape)
+            #
+            # # m2= torch.cat([gdc2, zdc2], 1)
+            # # print('m2.shape',m2.shape)
+            #
+            # # m2_r=zdc2.view(-1,32,32,32).cuda()
+            # o = F.relu(self.z_dconv3(zdc2))
+            # # print('output.shape',o.shape)
+            return o.cuda()
+        else:
+            g = g.view(-1, 4, 10, 10)
+            z=z.view(-1,60,10,10)
+
+            gz=torch.cat([g,z],1)
+            gz=gz.view(-1,64*10*10)
+            o=self.m_fc(gz)
+            # print(g.shape, z.shape)
+            #
+            # gdc1 = F.relu(self.g_dconv1(g))
+            # print('gdc1.shape:', gdc1.shape)
+            # # gc1=self.bn_g(gc1)
+            #
+            # gdc2 = F.relu(self.g_dconv2(gdc1))
+            # print('gdc2.shape:', gdc2.shape)
+            #
+            # zdc1 = F.relu(self.z_dconv1(z))
+            # print('zdc1.shape', zdc1.shape)
+            #
+            # m1 = torch.cat([gdc1, zdc1], 1)
+            #
+            # print('m1.shape', m1.shape)
+            # zdc2 = F.relu(self.z_dconv2(m1))
+            #
+            # print('zdc2.shape', zdc2.shape)
+            #
+            # # m2 = torch.cat([gdc2, zdc2], 1)
+            # # print('m2.shape', m2.shape)
+            #
+            # # m2_r = m2.view(-1, 48 * 38 * 38)
+            # o = F.relu(self.z_dconv3(zdc2))
+            # print(o.shape)
+            # print('output.shape', o.shape)
+            return o.view(-1,1,56,56)
 
 
 class Discriminator(nn.Module):
@@ -251,7 +340,7 @@ class cDCGAN(nn.Module):
                     self.G.train(False)
 
                 for i, data in enumerate(self.dataLoader[phase], 0):
-                    z = torch.randn((self.batch_size, 8,10,10))
+                    z = torch.randn((self.batch_size, 60,10,10))
 
                     g, img = data
                     G_optimizer.zero_grad()
@@ -309,7 +398,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G20000.npy'), np.load('../../data/doodle/I20000.npy')]
+    data = [np.load('../../data/doodle/G1000.npy'), np.load('../../data/doodle/I1000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
 #    dcgan.loadCheckpoint('19')
