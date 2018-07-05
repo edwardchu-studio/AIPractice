@@ -4,7 +4,7 @@ import numpy as np
 class doodleGenerator:
     def __init__(self):
         self.edges = ['u', 'r', 'd', 'l']
-        self.MNIST = input_data.read_data_sets("../MNIST_data/", one_hot=True, reshape=[])
+        self.MNIST = input_data.read_data_sets("../../MNIST_data/", one_hot=True, reshape=[])
         self.MNIST_TRAIN_NUM = self.MNIST.train.num_examples
         self.MNIST_TRAIN_SET = self.MNIST.train.images, self.MNIST.train.labels, np.argmax(self.MNIST.train.labels,
                                                                                            axis=1)
@@ -52,4 +52,4 @@ class doodleGenerator:
 
 if __name__ == '__main__':
     d=doodleGenerator()
-    d.createDataSet(30000)
+    d.createDataSet(1000)
