@@ -202,7 +202,7 @@ class cDCGAN(nn.Module):
                     real_d_loss = self.rD_LOSS(r_d_out, rd_label.cuda())
                     fake_d_loss = self.fD_LOSS(f_d_out, fd_label.cuda())
                     d_loss = real_d_loss + fake_d_loss
-                    g_loss = self.G_LOSS(f_d_out, rd_label)
+                    g_loss = self.G_LOSS(f_d_out, rd_label.cuda())
 
                     if i % 50 == 0:
                         ind = np.random.randint(0, self.batch_size)
