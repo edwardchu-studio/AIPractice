@@ -40,7 +40,7 @@ class Generator(nn.Module):
         if self.use_gpu:
             g=g.view(-1,4,10,10).cuda()
             # print(g.shape,z.shape)
-
+            z=z.cuda()
             gdc1=F.relu(self.g_dconv1(g))
             print('gdc1.shape:',gdc1.shape)
             # gc1=self.bn_g(gc1)
