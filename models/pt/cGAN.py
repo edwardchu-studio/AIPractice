@@ -184,6 +184,7 @@ class cDCGAN(nn.Module):
                     #                     fd_label.requires_grad=False
 
                     if self.use_gpu:
+			print("using gpu")
                         g, img, z, rd_label, fd_label, self.convert2Cuda([g, img, z, rd_label, fd_label])
 
                     x = self.G(g, z)
@@ -211,7 +212,7 @@ class cDCGAN(nn.Module):
                         d_loss.backward()
                         D_optimizer.step()
 
-            if e % 50 == 9:
+            if e % 10 == 9:
                 self.saveCheckpoint('{}'.format(e))
 
     def saveCheckpoint(self, e):
