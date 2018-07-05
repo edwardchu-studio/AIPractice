@@ -1,8 +1,8 @@
 models/tf/GANs/sbatch.sh
 \.idea/
-
+models/pt/out/
 _data/
-
+dataGenerator/MNIST_data/
 data/
 
 cache/
