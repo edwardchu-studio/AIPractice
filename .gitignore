@@ -1,3 +1,5 @@
+models/tf/GANs/*.out
+models/tf/GANs/MNIST_DCGAN_results/
 models/tf/GANs/sbatch.sh
 \.idea/
 
