@@ -33,7 +33,7 @@ class Generator(nn.Module):
         g=g.view(-1,4,10,10).cuda()
 
         z=z.view(-1,16,32,32).cuda()
-        
+
 #         print(g.shape,z.shape)
         gc1 = self.g_conv1(g)
 
@@ -49,10 +49,10 @@ class Generator(nn.Module):
 #         print('zc2.shape',zc2.shape)
         merged = torch.cat([gc1, zc2], 1)
 #         print('merged.shape',merged.shape)
-        merged_r=merged.view(-1,16*10*10)
+        merged_r=merged.view(-1,16*10*10).cuda()
         o = self.m_fc(merged_r)
 #         print('output.shape',o.shape)
-        return o.view((-1,1,56, 56))
+        return o.view((-1,1,56, 56)).cuda()
 
 
 class Discriminator(nn.Module):
@@ -91,7 +91,7 @@ class Discriminator(nn.Module):
         #         print('merged.shape:',merged.shape)
         mc = self.m_conv(merged)
         #         print('mc.shape:',mc.shape)
-        mc = mc.view(-1, 128 * 8 * 8)
+        mc = mc.view(-1, 128 * 8 * 8).cuda()
         m_fc1 = self.m_fc1(mc)
         #         print('m_fc1.shape',m_fc1.shape)
         m_fc2 = self.m_fc2(m_fc1)
