@@ -184,7 +184,7 @@ class cDCGAN(nn.Module):
                     #                     fd_label.requires_grad=False
 
                     if self.use_gpu:
-			print("using gpu")
+                        print("using gpu")
                         g, img, z, rd_label, fd_label, self.convert2Cuda([g, img, z, rd_label, fd_label])
 
                     x = self.G(g, z)
