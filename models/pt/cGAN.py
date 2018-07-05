@@ -107,13 +107,14 @@ class cDCGAN(nn.Module):
         self.rD_LOSS = nn.CrossEntropyLoss()
         self.fD_LOSS = nn.CrossEntropyLoss()
         self.use_gpu = torch.cuda.is_available()
+        self.G = Generator()
+        self.D = Discriminator()
+        
         if self.use_gpu:
             print('use cuda')
             self.G = Generator().cuda()
             self.D = Discriminator().cuda()
-        else:
-            self.G = Generator()
-            self.D = Discriminator()
+
         self.lr = 0.001
         self.batch_size = 50
         self.iters = 1000
