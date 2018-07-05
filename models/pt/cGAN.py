@@ -62,7 +62,7 @@ class Generator(nn.Module):
             m2= torch.cat([gdc2, zdc2], 1)
             # print('m2.shape',m2.shape)
 
-            m2_r=m2.view(-1,48*32*32).cuda()
+            m2_r=m2.view(-1,48*38*38).cuda()
             o = self.m_fc(m2_r)
             # print('output.shape',o.shape)
             return o.view((-1,1,56, 56)).cuda()
