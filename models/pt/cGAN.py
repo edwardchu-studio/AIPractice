@@ -30,8 +30,10 @@ class Generator(nn.Module):
         self.bn_z=nn.modules.BatchNorm2d(12)
 
     def forward(self, g,z):
-        g=g.view(-1,4,10,10)
-        z=z.view(-1,16,32,32)
+        g=g.view(-1,4,10,10).cuda()
+
+        z=z.view(-1,16,32,32).cuda()
+        
 #         print(g.shape,z.shape)
         gc1 = self.g_conv1(g)
 
@@ -70,8 +72,8 @@ class Discriminator(nn.Module):
         self.bn_x = nn.modules.BatchNorm2d(num_features=16)
 
     def forward(self, g, x):
-        g = g.view(-1, 4, 10, 10)
-        x = x.view(-1, 1, 56, 56)
+        g = g.view(-1, 4, 10, 10).cuda()
+        x = x.view(-1, 1, 56, 56).cuda()
         gc1 = self.g_conv1(g)
         gc1 = F.relu(gc1)
         gc1 = self.bn_g(gc1)
