@@ -110,19 +110,25 @@ class Generator(nn.Module):
         self.z_conv4=nn.Conv2d(64,128,3,1,1)
         self.fc1=nn.Linear(128*10*10,6400)
         self.fc2=nn.Linear(6400,56*56)
+        self.lrelu=nn.LeakyReLU()
+
+        self.bn1=nn.BatchNorm2d(32)
+        self.bn2=nn.BatchNorm2d(64)
+        # self.bn3=nn.BatchNorm2d(128)
     def forward(self, g,z):
 
         if self.use_gpu:
             g=g.view(-1,4,10,10).cuda()
             z=z.view(-1,8,32,32).cuda()
-            z1=F.relu(self.z_pool1(self.z_conv1(z)))
-            z2=F.relu(self.z_conv2(z1))
-
+            z1=self.lrelu(self.z_pool1(self.z_conv1(z)))
+            z2=self.lrelu(self.z_conv2(z1))
+            z2=self.bn1(z2)
 
             _z3=torch.cat([g,z2],1)
-            z3=F.relu(self.z_conv3(_z3))
-            z4=F.relu(self.z_conv4(z3))
+            z3=self.lrelu(self.z_conv3(_z3))
+            z3=self.bn2(z3)
 
+            z4=self.lrelu(self.z_conv4(z3))
             z4=z4.view(-1,128*10*10).cuda()
             fc1=self.fc1(z4)
             
@@ -131,13 +137,14 @@ class Generator(nn.Module):
         else:
             g=g.view(-1,4,10,10)
             z=z.view(-1,8,32,32)
-            z1=F.relu(self.z_pool1(self.z_conv1(z)))
-            z2=F.relu(self.z_conv2(z1))
+            z1=self.lrelu(self.z_pool1(self.z_conv1(z)))
+            z2=self.lrelu(self.z_conv2(z1))
             print("z2.shape: ",z2.shape)
-
+            z2 = self.bn1(z2)
             _z3=torch.cat([g,z2],1)
-            z3=F.relu(self.z_conv3(_z3))
-            z4=F.relu(self.z_conv4(z3))
+            z3=self.lrelu(self.z_conv3(_z3))
+            z3 = self.bn2(z3)
+            z4=self.lrelu(self.z_conv4(z3))
             print("z4.shape: ", z4.shape)
             z4=z4.view(-1,128*10*10)
             fc1=self.fc1(z4)
@@ -158,6 +165,7 @@ class Discriminator(nn.Module):
         self.m_fc2 = nn.Linear(2048, 256)
         self.m_fc3 = nn.Linear(256, 2)
         self.d_softmax = nn.Softmax()
+        self.lrelu=nn.LeakyReLU()
 
         self.bn_g = nn.modules.BatchNorm2d(num_features=8)
         self.bn_x = nn.modules.BatchNorm2d(num_features=16)
@@ -167,21 +175,21 @@ class Discriminator(nn.Module):
             g = g.view(-1, 4, 10, 10).cuda()
             x = x.view(-1, 1, 56, 56).cuda()
             gc1 = self.g_conv1(g)
-            gc1 = F.relu(gc1)
+            gc1 = self.lrelu(gc1)
             gc1 = self.bn_g(gc1)
         #         print('gc1.shape:',gc1.shape)
             xc1 = self.x_conv1(x)
         #         print('xc1.shape:',xc1.shape)
-            xp1 = F.relu(self.x_pool1(xc1))
+            xp1 = self.lrelu(self.x_pool1(xc1))
             xp1 = self.bn_x(xp1)
             #         print('xp1.shape:',xp1.shape)
             xc2 = self.x_conv2(xp1)
             #         print('xc2.shape:',xc2.shape)
-            xp2 = F.relu(self.x_pool1(xc2))
+            xp2 = self.lrelu(self.x_pool1(xc2))
             #         print('xp2.shape:',xp2.shape)
             merged = torch.cat([xp2, gc1], 1)
             #         print('merged.shape:',merged.shape)
-            mc = self.m_conv(merged)
+            mc = self.lrelu(self.m_conv(merged))
             #         print('mc.shape:',mc.shape)
             mc = mc.view(-1, 128 * 8 * 8).cuda()
             m_fc1 = self.m_fc1(mc)
@@ -195,21 +203,21 @@ class Discriminator(nn.Module):
             g = g.view(-1, 4, 10, 10)
             x = x.view(-1, 1, 56, 56)
             gc1 = self.g_conv1(g)
-            gc1 = F.relu(gc1)
+            gc1 = self.lrelu(gc1)
             gc1 = self.bn_g(gc1)
             #         print('gc1.shape:',gc1.shape)
             xc1 = self.x_conv1(x)
             #         print('xc1.shape:',xc1.shape)
-            xp1 = F.relu(self.x_pool1(xc1))
+            xp1 = self.lrelu(self.x_pool1(xc1))
             xp1 = self.bn_x(xp1)
             #         print('xp1.shape:',xp1.shape)
             xc2 = self.x_conv2(xp1)
             #         print('xc2.shape:',xc2.shape)
-            xp2 = F.relu(self.x_pool1(xc2))
+            xp2 = self.lrelu(self.x_pool1(xc2))
             #         print('xp2.shape:',xp2.shape)
             merged = torch.cat([xp2, gc1], 1)
             #         print('merged.shape:',merged.shape)
-            mc = self.m_conv(merged)
+            mc = self.lrelu(self.m_conv(merged))
             #         print('mc.shape:',mc.shape)
             mc = mc.view(-1, 128 * 8 * 8)
             m_fc1 = self.m_fc1(mc)
@@ -280,9 +288,9 @@ class cDCGAN(nn.Module):
 
     def trainNetwork(self):
         # G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
-        G_optimizer= optim.Adadelta(self.G.parameters())
-        # D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
-        D_optimizer=optim.Adadelta(self.D.parameters())
+        G_optimizer= optim.Adam(self.G.parameters())
+        D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
+        # D_optimizer=optim.Adadelta(self.D.parameters())
 
         for e in range(self.epoch):
             G_losses, D_losses = [], []
@@ -293,8 +301,8 @@ class cDCGAN(nn.Module):
                 print('Current Phase:{}'.format(phase))
 
                 if phase == 'train':
-                    G_optimizer.step()
-                    D_optimizer.step()
+                    # G_optimizer.step()
+                    # D_optimizer.step()
                     self.D.train(True)
                     self.G.train(True)
                 else:
@@ -320,6 +328,7 @@ class cDCGAN(nn.Module):
                     x = self.G(g, z)
                     r_d_out = self.D(g, img)
                     f_d_out = self.D(g, x)
+
                     if self.use_gpu:
                         real_d_loss = self.rD_LOSS(r_d_out, rd_label.cuda())
                         fake_d_loss = self.fD_LOSS(f_d_out, fd_label.cuda())
@@ -331,6 +340,15 @@ class cDCGAN(nn.Module):
                         d_loss = 0.5*(real_d_loss + fake_d_loss)
                         g_loss = self.G_LOSS(f_d_out, rd_label)
 
+
+                    G_losses.append(g_loss.data[0])
+                    D_losses.append(d_loss.data[0])
+                    if phase == 'train':
+                        d_loss.backward()
+                        D_optimizer.step()
+                        g_loss.backward(retain_graph=True)
+                        G_optimizer.step()
+
                     if i % 50 == 0:
                         ind = np.random.randint(0, self.batch_size)
                         print("{}  G_loss: {}, D_loss:{}".format(phase, g_loss.data[0], d_loss.data[0]))
@@ -339,14 +357,6 @@ class cDCGAN(nn.Module):
                                     np.array(img[ind].data).reshape((56, 56)))
                         misc.imsave(self.SAVE_DIR + '{}_{}_{}_x.png'.format(e, phase, i),
                                     np.array(x[ind].data).reshape((56, 56)))
-                    G_losses.append(g_loss)
-                    D_losses.append(d_loss)
-                    if phase == 'train':
-                        g_loss.backward(retain_graph=True)
-                        G_optimizer.step()
-                        d_loss.backward()
-                        D_optimizer.step()
-
             if e % 10 == 9:
                 self.saveCheckpoint('{}'.format(e))
 
