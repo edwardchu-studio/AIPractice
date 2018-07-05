@@ -194,12 +194,13 @@ class cDCGAN(nn.Module):
                     if self.use_gpu:
                         g, img, z, rd_label, fd_label, self.convert2Cuda([g, img, z, rd_label, fd_label])
 
+
                     x = self.G(g, z)
                     r_d_out = self.D(g, img)
                     f_d_out = self.D(g, x)
 
-                    real_d_loss = self.rD_LOSS(r_d_out, rd_label)
-                    fake_d_loss = self.fD_LOSS(f_d_out, fd_label)
+                    real_d_loss = self.rD_LOSS(r_d_out, rd_label.cuda())
+                    fake_d_loss = self.fD_LOSS(f_d_out, fd_label.cuda())
                     d_loss = real_d_loss + fake_d_loss
                     g_loss = self.G_LOSS(f_d_out, rd_label)
 
