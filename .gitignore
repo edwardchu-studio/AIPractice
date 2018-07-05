@@ -1,10 +1,11 @@
 models/tf/GANs/*.out
 models/tf/GANs/MNIST_DCGAN_results/
+models/pt/checkpoint
 models/tf/GANs/sbatch.sh
 \.idea/
-
+models/pt/out/
 _data/
-
+dataGenerator/MNIST_data/
 data/
 
 cache/
@@ -12,3 +13,23 @@ models/*.out
 models/nohup.out
 
 models/tf/GANs/MNIST_data/
+
+utils/G1000\.npy
+
+utils/G100000\.npy
+
+utils/I1000\.npy
+
+utils/I100000\.npy
+
+utils/out/
+
+utils/\.DS_Store
+
+utils/D_temp\.pth\.tar
+
+utils/G_temp\.pth\.tar
+
+utils/G10000\.npy
+
+utils/I10000\.npy
