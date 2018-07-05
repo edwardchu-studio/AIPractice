@@ -228,7 +228,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G30000.npy'), np.load('../../data/doodle/I30000.npy')]
+    data = [np.load('../../data/doodle/G100000.npy'), np.load('../../data/doodle/I100000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
     # dcgan.loadCheckpoint('')
