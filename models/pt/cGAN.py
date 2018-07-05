@@ -279,9 +279,8 @@ class cDCGAN(nn.Module):
         return [_.cuda() for _ in l]
 
     def trainNetwork(self):
-        G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
-
-
+        # G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
+        G_optimizer= optim.Adadelta(self.G.parameters())
         D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
 
 
