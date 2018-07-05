@@ -42,8 +42,8 @@ class Generator(nn.Module):
             # print(g.shape,z.shape)
             z=z.cuda()
             gdc1=F.relu(self.g_dconv1(g))
-            print('gdc1.shape:',gdc1.shape)
-            # gc1=self.bn_g(gc1)
+            # print('gdc1.shape:',gdc1.shape)
+            # gc1=self.bn_g(gdc1)
 
             gdc2=F.relu(self.g_dconv2(gdc1))
             # print('gdc2.shape:',gdc2.shape)
