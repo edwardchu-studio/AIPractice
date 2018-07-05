@@ -109,11 +109,11 @@ class cDCGAN(nn.Module):
         self.use_gpu = torch.cuda.is_available()
         self.G = Generator()
         self.D = Discriminator()
-        
+
         if self.use_gpu:
             print('use cuda')
-            self.G = Generator().cuda()
-            self.D = Discriminator().cuda()
+            self.G = self.G.cuda()
+            self.D = self.D.cuda()
 
         self.lr = 0.001
         self.batch_size = 50
