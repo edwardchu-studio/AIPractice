@@ -215,12 +215,12 @@ class cDCGAN(nn.Module):
                 self.saveCheckpoint('{}'.format(e))
 
     def saveCheckpoint(self, e):
-        torch.save(self.D.state_dict(),'D_temp{}.pth.tar'.format(e))
-        torch.save(self.G.state_dict(),'G_temp{}.pth.tar'.format(e))
+        torch.save(self.D.state_dict(),'checkpoint/D_temp{}.pth.tar'.format(e))
+        torch.save(self.G.state_dict(),'checkpoint/G_temp{}.pth.tar'.format(e))
 
     def loadCheckpoint(self, e):
-        self.D.load_state_dict(torch.load('D_temp{}.pth.tar'.format(e)))
-        self.G.load_state_dict(torch.load('G_temp{}.pth.tar'.format(e)))
+        self.D.load_state_dict(torch.load('checkpoint/D_temp{}.pth.tar'.format(e)))
+        self.G.load_state_dict(torch.load('checkpoint/G_temp{}.pth.tar'.format(e)))
 
 
 if __name__ == '__main__':
