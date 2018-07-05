@@ -45,11 +45,11 @@ class doodleGenerator:
 
         I = np.array(I).reshape((num, 56, 56, 1))
         G = np.array(G)
-        np.save('../../data/G' + str(num), G)
-        np.save('../../data/I' + str(num), I)
+        np.save('../../data/doodle/G' + str(num), G)
+        np.save('../../data/doodle/I' + str(num), I)
         self.TRAIN_SET = [G, I]
         return G, I
 
 if __name__ == '__main__':
     d=doodleGenerator()
-    d.createDataSet()
+    d.createDataSet(30000)

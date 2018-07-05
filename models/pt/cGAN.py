@@ -110,11 +110,11 @@ class cDCGAN(nn.Module):
         self.fD_LOSS = nn.CrossEntropyLoss()
         self.use_gpu = torch.cuda.is_available()
         self.lr = 0.001
-        self.batch_size = 100
+        self.batch_size = 50
         self.iters = 1000
         self.epoch = 200
 
-        self.SAVE_DIR = './out/2/'
+        self.SAVE_DIR = './out/3/'
         try:
             os.makedirs(self.SAVE_DIR)
         except:
@@ -184,7 +184,6 @@ class cDCGAN(nn.Module):
                     #                     fd_label.requires_grad=False
 
                     if self.use_gpu:
-                        print("using gpu")
                         g, img, z, rd_label, fd_label, self.convert2Cuda([g, img, z, rd_label, fd_label])
 
                     x = self.G(g, z)
@@ -225,7 +224,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G100000.npy'), np.load('../../data/doodle/I100000.npy')]
+    data = [np.load('../../data/doodle/G30000.npy'), np.load('../../data/doodle/I30000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
     # dcgan.loadCheckpoint('')
