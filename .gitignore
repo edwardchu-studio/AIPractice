@@ -1,3 +1,4 @@
+models/pt/checkpoint
 models/tf/GANs/sbatch.sh
 \.idea/
 models/pt/out/

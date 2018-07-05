@@ -117,12 +117,12 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.lr = 0.001
+        self.lr = 0.0001
         self.batch_size = 50
         self.iters = 1000
         self.epoch = 200
 
-        self.SAVE_DIR = './out/4/'
+        self.SAVE_DIR = './out/6/'
         try:
             os.makedirs(self.SAVE_DIR)
         except:
@@ -131,7 +131,7 @@ class cDCGAN(nn.Module):
     def setTrainParas(self, batch_num, lr, iters, epoch):
         self.lr, self.batch_num, self.iters, self.epoch = lr, batch_num, iters, epoch
 
-    def feedData(self, GI, ratio=0.8):
+    def feedData(self, GI, ratio=1):
         G, I = GI
         num_of_records = G.shape[0]
 
@@ -233,9 +233,9 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G100000.npy'), np.load('../../data/doodle/I100000.npy')]
+    data = [np.load('../../data/doodle/G30000.npy'), np.load('../../data/doodle/I30000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data)
-    # dcgan.loadCheckpoint('')
+#    dcgan.loadCheckpoint('19')
     dcgan.trainNetwork()
 
