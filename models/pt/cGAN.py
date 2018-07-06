@@ -159,7 +159,7 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.g_lr = 0.01
+        self.g_lr = 0.0001
         self.d_lr=0.001
         self.batch_size = 25
         self.iters = 1000
@@ -285,7 +285,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G1000.npy'), np.load('../../data/doodle/I1000.npy')]
+    data = [np.load('../../data/doodle/G20000.npy'), np.load('../../data/doodle/I20000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data,ratio=0.8)
 #    dcgan.loadCheckpoint('19')
