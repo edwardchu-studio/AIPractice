@@ -1,6 +1,10 @@
 models/tf/GANs/*.out
 models/tf/GANs/MNIST_DCGAN_results/
 models/pt/checkpoint
+dataGenerator/doodle/*.out
+models/pt/*.out
+dataGenerator/doodle/sbatch.sh
+models/pt/*.sh
 models/tf/GANs/sbatch.sh
 \.idea/
 models/pt/out/

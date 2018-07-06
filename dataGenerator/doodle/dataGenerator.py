@@ -52,4 +52,4 @@ class doodleGenerator:
 
 if __name__ == '__main__':
     d=doodleGenerator()
-    d.createDataSet(20000)
+    d.createDataSet(150000)
