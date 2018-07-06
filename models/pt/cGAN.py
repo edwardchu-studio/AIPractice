@@ -168,7 +168,7 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.lr = 0.0001
+        self.lr = 0.0005
 
         self.batch_size = 50
         self.iters = 1000
