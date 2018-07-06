@@ -22,13 +22,13 @@ class Generator(nn.Module):
 
 
         self.z_dense1=nn.Linear(4*16*16,1024,bias=True)
-        self.m_dense1=nn.Linear(1024,4096,bias=True)
-        self.m_dense2=nn.Linear(4096,56*56,bias=True)
-
-        torch.nn.init.xavier_uniform(self.g_dense1.weight)
-        torch.nn.init.xavier_uniform(self.z_dense1.weight)
-        torch.nn.init.xavier_uniform(self.m_dense1.weight)
-        torch.nn.init.xavier_uniform(self.m_dense2.weight)
+        self.m_dense1=nn.Linear(1024,56*56,bias=True)
+        # self.m_dense2=nn.Linear(4096,56*56,bias=True)
+        self.bn1=nn.BatchNorm1d(1024)
+        # torch.nn.init.xavier_uniform(self.g_dense1.weight)
+        # torch.nn.init.xavier_uniform(self.z_dense1.weight)
+        # torch.nn.init.xavier_uniform(self.m_dense1.weight)
+        # torch.nn.init.xavier_uniform(self.m_dense2.weight)
 
     def forward(self, g, z):
         if self.use_gpu:
@@ -41,38 +41,41 @@ class Generator(nn.Module):
             # print('g1.shape: ',g1.shape)
             # print('z1.shape: ',z1.shape)
             m=g1+z1
+
+            m=self.bn1(m)
             # print("m.shape: ",m.shape)
 
             m1= self.m_dense1(m)
 
             # print('m1.shape',m1.shape)
-            m2=self.m_dense2(m1)
+            # m2=self.m_dense2(m1)
             # print('m2.shape',m2.shape)
 
             # o = self.m_fc(merged_r)
             #         print('output.shape',o.shape)
-            return m2.view((-1, 1, 56, 56)).cuda()
+            return m1.view((-1, 1, 56, 56)).cuda()
         else:
             g = g.view(-1, 4*10*10)
             z = z.view(-1, 4*16*16)
-            print(g.shape,z.shape)
+            # print(g.shape,z.shape)
             g1 = self.g_dense1(g)
 
             z1=self.z_dense1(z)
-            print('g1.shape: ',g1.shape)
-            print('z1.shape: ',z1.shape)
+            # print('g1.shape: ',g1.shape)
+            # print('z1.shape: ',z1.shape)
             m=g1+z1
-            print("m.shape: ",m.shape)
+            m = self.bn1(m)
+            # print("m.shape: ",m.shape)
 
             m1= self.m_dense1(m)
 
-            print('m1.shape',m1.shape)
-            m2=self.m_dense2(m1)
-            print('m2.shape',m2.shape)
+            # print('m1.shape',m1.shape)
+            # m2=self.m_dense2(m1)
+            # print('m2.shape',m2.shape)
 
             # o = self.m_fc(merged_r)
             #         print('output.shape',o.shape)
-            return m2.view((-1, 1, 56, 56))
+            return m1.view((-1, 1, 56, 56))
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -165,13 +168,13 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.g_lr = 0.0001
-        self.d_lr=0.001
-        self.batch_size = 25
+        self.lr = 0.0001
+
+        self.batch_size = 50
         self.iters = 1000
         self.epoch = 200
 
-        self.SAVE_DIR = './out/10/'
+        self.SAVE_DIR = './out/test1/'
         try:
             os.makedirs(self.SAVE_DIR)
         except:
@@ -208,9 +211,9 @@ class cDCGAN(nn.Module):
         return [_.cuda() for _ in l]
 
     def trainNetwork(self):
-        G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
+        G_optimizer = optim.SGD(self.G.parameters(), lr=self.lr, momentum=0.9)
         # G_optimizer= optim.Adadelta(self.G.parameters())
-        D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
+        D_optimizer = optim.SGD(self.D.parameters(), lr=self.lr, momentum=0.9)
         # D_optimizer=optim.Adadelta(self.D.parameters())
 
         for e in range(self.epoch):
@@ -291,7 +294,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G20000.npy'), np.load('../../data/doodle/I20000.npy')]
+    data = [np.load('../../data/doodle/G100000.npy'), np.load('../../data/doodle/I100000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data,ratio=0.8)
 #    dcgan.loadCheckpoint('19')
