@@ -18,11 +18,17 @@ class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
         self.use_gpu = torch.cuda.is_available()
-        self.g_dense1=nn.Linear(4*10*10,1024)
-        self.z_dense1=nn.Linear(4*16*16,1024)
-        self.m_dense1=nn.Linear(1024,4096)
-        self.m_dense2=nn.Linear(4096,56*56)
+        self.g_dense1=nn.Linear(4*10*10,1024,bias=True)
 
+
+        self.z_dense1=nn.Linear(4*16*16,1024,bias=True)
+        self.m_dense1=nn.Linear(1024,4096,bias=True)
+        self.m_dense2=nn.Linear(4096,56*56,bias=True)
+
+        torch.nn.init.xavier_uniform(self.g_dense1.weight)
+        torch.nn.init.xavier_uniform(self.z_dense1.weight)
+        torch.nn.init.xavier_uniform(self.m_dense1.weight)
+        torch.nn.init.xavier_uniform(self.m_dense2.weight)
 
     def forward(self, g, z):
         if self.use_gpu:
