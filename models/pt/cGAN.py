@@ -94,9 +94,9 @@ class dGenerator(nn.Module):
             # print('output.shape', o.shape)
             return o
 
-class Generator(nn.Module):
+class ccGenerator(nn.Module):
     def __init__(self):
-        super(Generator,self).__init__()
+        super(ccGenerator,self).__init__()
 
         self.use_gpu=torch.cuda.is_available()
         self.g_conv1=nn.Conv2d(4,16,3,1,1)
@@ -151,6 +151,63 @@ class Generator(nn.Module):
             # o = self.fc2(fc1)
             return o.view(-1,1,56,56)
 
+class Generator(nn.Module):
+    def __init__(self):
+        super(Generator, self).__init__()
+        self.g_conv1 = nn.Conv2d(4, 8, 3, padding=1)
+        self.z_conv1 = nn.Conv2d(16, 12, 3, padding=1)
+        self.z_pool1 = nn.MaxPool2d(2, 2)
+        self.z_conv2 = nn.Conv2d(12, 8, 7, stride=1)
+        self.m_fc = nn.Linear(10 * 10 * 16, 56 * 56 * 1)
+        self.bn_g = nn.modules.BatchNorm2d(8)
+        self.bn_z = nn.modules.BatchNorm2d(12)
+        self.use_gpu=torch.cuda.is_available()
+
+    def forward(self, g, z):
+        if self.use_gpu:
+            g = g.view(-1, 4, 10, 10).cuda()
+            z = z.view(-1, 16, 32, 32).cuda()
+            #         print(g.shape,z.shape)
+            gc1 = self.g_conv1(g)
+
+            gc1 = F.relu(gc1)
+            #         print('gc1.shape:',gc1.shape)
+            gc1 = self.bn_g(gc1)
+            zc1 = self.z_pool1(self.z_conv1(z))
+            zc1 = F.relu(zc1)
+            #         print('zc1.shape',zc1.shape)
+            zc1 = self.bn_z(zc1)
+            zc2 = self.z_conv2(zc1)
+            zc2 = F.relu(zc2)
+            #         print('zc2.shape',zc2.shape)
+            merged = torch.cat([gc1, zc2], 1)
+            #         print('merged.shape',merged.shape)
+            merged_r = merged.view(-1, 16 * 10 * 10).cuda()
+            o = self.m_fc(merged_r)
+            #         print('output.shape',o.shape)
+            return o.view((-1, 1, 56, 56)).cuda()
+        else:
+            g = g.view(-1, 4, 10, 10)
+            z = z.view(-1, 16, 32, 32)
+            #         print(g.shape,z.shape)
+            gc1 = self.g_conv1(g)
+
+            gc1 = F.relu(gc1)
+            #         print('gc1.shape:',gc1.shape)
+            gc1 = self.bn_g(gc1)
+            zc1 = self.z_pool1(self.z_conv1(z))
+            zc1 = F.relu(zc1)
+            #         print('zc1.shape',zc1.shape)
+            zc1 = self.bn_z(zc1)
+            zc2 = self.z_conv2(zc1)
+            zc2 = F.relu(zc2)
+            #         print('zc2.shape',zc2.shape)
+            merged = torch.cat([gc1, zc2], 1)
+            #         print('merged.shape',merged.shape)
+            merged_r = merged.view(-1, 16 * 10 * 10)
+            o = self.m_fc(merged_r)
+            #         print('output.shape',o.shape)
+            return o.view((-1, 1, 56, 56))
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -243,7 +300,7 @@ class cDCGAN(nn.Module):
             self.G = self.G.cuda()
             self.D = self.D.cuda()
 
-        self.g_lr = 0.0005
+        self.g_lr = 0.001
         self.d_lr=0.001
         self.batch_size = 25
         self.iters = 1000
@@ -286,8 +343,8 @@ class cDCGAN(nn.Module):
         return [_.cuda() for _ in l]
 
     def trainNetwork(self):
-        # G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
-        G_optimizer= optim.Adadelta(self.G.parameters())
+        G_optimizer = optim.SGD(self.G.parameters(), lr=self.g_lr, momentum=0.9)
+        # G_optimizer= optim.Adadelta(self.G.parameters())
         D_optimizer = optim.SGD(self.D.parameters(), lr=self.d_lr, momentum=0.9)
         # D_optimizer=optim.Adadelta(self.D.parameters())
 
@@ -309,7 +366,7 @@ class cDCGAN(nn.Module):
                     self.G.train(False)
 
                 for i, data in enumerate(self.dataLoader[phase], 0):
-                    z = torch.randn((self.batch_size, 8,32,32))
+                    z = torch.randn((self.batch_size, 16,32,32))
 
                     g, img = data
                     G_optimizer.zero_grad()
@@ -369,7 +426,7 @@ class cDCGAN(nn.Module):
 
 
 if __name__ == '__main__':
-    data = [np.load('../../data/doodle/G150000.npy'), np.load('../../data/doodle/I150000.npy')]
+    data = [np.load('../../data/doodle/G1000.npy'), np.load('../../data/doodle/I1000.npy')]
     dcgan = cDCGAN()
     dcgan.feedData(data,ratio=0.8)
 #    dcgan.loadCheckpoint('19')
